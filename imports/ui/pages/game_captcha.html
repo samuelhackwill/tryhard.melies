@@ -1,0 +1,5 @@
+<template name="game_captcha">
+  <div class="h-screen w-screen transition-colors duration-1000 {{bgColor}}">
+    {{#if level1Beaten}} {{> acte_2}} {{else}} {{> acte_1}} {{/if}}
+  </div>
+</template>
