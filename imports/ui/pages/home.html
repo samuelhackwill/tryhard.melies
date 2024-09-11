@@ -1,0 +1,15 @@
+<template name="home">
+    <div class="m-6">
+        <div class="m-6">
+            <h1>welcome to melies demos. What do you want to tryout?</h1>
+        </div>
+        
+        {{#each route}}
+            <div>
+                <a class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href={{this.pathDef}}>
+                    {{this.pathDef}}
+                </a>
+            </div>
+        {{/each}}
+</div>
+</template>
