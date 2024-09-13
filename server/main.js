@@ -1,30 +1,39 @@
 import { WebApp } from "meteor/webapp";
 import fs from "fs";
 import path from "path";
+import readline from "readline";
 
 WebApp.connectHandlers.use("/api/chunked-file", (req, res, next) => {
-  const chunkSize = 1024 * 64; // 64KB per chunk
-  const filePath = path.join(process.env.PWD, "private/patronyms.js");
-
+  const filePath = path.join(process.env.PWD, "private/patronyms.ndjson");
+  const chunkSize = parseInt(req.query.chunkSize) || 10000; // Lines per chunk
   let chunkIndex = parseInt(req.query.chunk) || 0; // Get the chunk index from the query param
-  const start = chunkIndex * chunkSize; // Calculate where the chunk starts
 
-  // Open a read stream starting at the calculated position
-  const readStream = fs.createReadStream(filePath, {
-    encoding: "utf8",
-    start: start,
-    end: start + chunkSize - 1,
+  let currentLine = 0; // Track line number
+  let chunkData = []; // Store lines for the current chunk
+
+  const readStream = fs.createReadStream(filePath, { encoding: "utf8" });
+  const rl = readline.createInterface({ input: readStream });
+
+  rl.on("line", (line) => {
+    if (
+      currentLine >= chunkIndex * chunkSize &&
+      currentLine < (chunkIndex + 1) * chunkSize
+    ) {
+      chunkData.push(JSON.parse(line)); // Parse and store each line as JSON
+    }
+    currentLine++;
+
+    if (currentLine >= (chunkIndex + 1) * chunkSize) {
+      rl.close(); // Stop reading after the desired chunk
+    }
   });
 
-  readStream.on("data", (chunk) => {
-    res.write(chunk);
-  });
-
-  readStream.on("end", () => {
+  rl.on("close", () => {
+    res.write(JSON.stringify(chunkData)); // Send the chunk as JSON
     res.end();
   });
 
-  readStream.on("error", (err) => {
+  rl.on("error", (err) => {
     console.error("Error reading the file:", err);
     res.statusCode = 500;
     res.end("Server error");
