@@ -2,9 +2,14 @@ import "./game_text.html";
 
 import "../../api/clickable_text/text.js";
 
+// TODO : color evolution for last letter based on hit points. gotta find a good aproach, this is harder than expected!
+// tried using a tracker function but it's messing up the html markup
+// tried a css hack but it fucks up the text-flow
+// https://stackoverflow.com/questions/15441742/change-last-letter-color
+
 dropToZero = null;
 
-const targetMaxSpeed = 6;
+const targetMaxSpeed = 16;
 // on veut qu'il y ait un maximum absolu de 16 lettres dévoilées par seconde.
 // donc tout les clics au delà de 16 / s doivent augmenter les points de vie de chaque lettre.
 // à 32 clics / s on veut que les lettres aient 2 HP
@@ -15,34 +20,13 @@ const revealedLetters = new ReactiveVar([]);
 clickTimestamps = [];
 const clicksPerSecond = new ReactiveVar(0);
 
-Tracker.autorun(() => {
-  last_item = revealedLetters.get()[revealedLetters.get().length - 1];
-  console.log("AUTORUN ", last_item);
-  if (last_item?.hp) {
-    console.log("this is a MF");
-    //     // Select the span element
-    //     mySpan = document.getElementById("game_text_span");
-    //     // Get the text content of the span
-    //     const text = mySpan.textContent;
-    //     // Check if the text is not empty
-    //     if (text.length > 0) {
-    //       // Separate the last letter from the rest of the text
-    //       const lastLetter = text.slice(-1);
-    //       const restOfText = text.slice(0, -1);
-    //       // Set the HTML content with a styled span for the last letter
-    //       mySpan.innerHTML = `${restOfText}<span class="highlight-last-letter">${lastLetter}</span>`;
-    //     }
-    //     // Optionally apply some CSS to style the last letter
-    //     const style = document.createElement("style");
-    //     style.textContent = `
-    //   .highlight-last-letter {
-    //     color: red; /* Change to any color or style */
-    //     font-weight: bold;
-    //   }
-    // `;
-    //     document.head.append(style);
-  }
-});
+// Tracker.autorun(() => {
+//   last_item = revealedLetters.get()[revealedLetters.get().length - 1];
+//   console.log("AUTORUN ", last_item);
+//   if (last_item?.hp) {
+//     console.log("this is a MF");
+//   }
+// });
 
 Template.game_text.events({
   "mousedown #game_text_container"(e) {
