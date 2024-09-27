@@ -1,5 +1,11 @@
 import "./game_patronymes.html";
 
+// TO DO : hmmm implementing this would be super nice
+// https://codepen.io/pixelacorn/pen/eNObea
+
+// maybe different roles for every player? one magnifer, one scroller, one clicker?
+rootUrl = Meteor.absoluteUrl().replace(/\/+$/, "");
+
 let chunkIndex = 0;
 let loading = false; // Prevent multiple concurrent loads
 
@@ -56,9 +62,9 @@ Template.game_patronymes.onRendered(function () {
 
 addLineTo = async function (column) {
   try {
-    const chunkData = await fetch(`/api/chunked-file?chunk=${chunkIndex}`).then(
-      (res) => res.text()
-    );
+    const chunkData = await fetch(
+      `${rootUrl}/api/chunked-file?chunk=${chunkIndex}`
+    ).then((res) => res.text());
     const arrayData = JSON.parse(chunkData);
 
     for (let index = 0; index < arrayData.length; index++) {
